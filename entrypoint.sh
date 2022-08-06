@@ -87,7 +87,7 @@ main() {
             sendReaction "$GITHUB_PULL_REQUEST_EVENT_NUMBER"
         else
             sendComment "$GITHUB_PULL_REQUEST_EVENT_NUMBER" "$PULL_REQUEST_COMMENT"
-            closeIssue "$GITHUB_PULL_REQUEST_EVENT_NUMBER"
+            exit 1
         fi
     fi
 
