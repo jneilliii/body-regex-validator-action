@@ -84,10 +84,15 @@ main() {
 
         if [[ "$GITHUB_PULL_REQUEST_EVENT_BODY" =~ $PULL_REQUEST_PATTERN ]]
         then
+            echo "Found pull request pattern in body, success!"
             sendReaction "$GITHUB_PULL_REQUEST_EVENT_NUMBER"
         else
+            echo "No match for pattern '$PULL_REQUEST_PATTERN', failing job."
             if [[ "$GITHUB_EVENT_ACTION" == "opened" ]]; then
+                echo "Sending comment to PR."
                 sendComment "$GITHUB_PULL_REQUEST_EVENT_NUMBER" "$PULL_REQUEST_COMMENT"
+            else
+                echo "Skipping comment to PR."
             fi
             exit 1
         fi
