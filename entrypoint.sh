@@ -78,7 +78,7 @@ main() {
     GITHUB_EVENT_ACTION=$(jq --raw-output .action "$GITHUB_EVENT_PATH")
 
     # handle pull_request
-    if [[ "$GITHUB_EVENT_NAME" == "pull_request" && ("$GITHUB_EVENT_ACTION" == "opened" || "$GITHUB_EVENT_ACTION" == "edited") ]]; then
+    if [[ "$GITHUB_EVENT_NAME" == "pull_request" && "$GITHUB_EVENT_ACTION" =~ "^(opened|reopened|edited|synchronize)$" ]]; then
         GITHUB_PULL_REQUEST_EVENT_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
         GITHUB_PULL_REQUEST_EVENT_BODY=$(jq --raw-output .pull_request.body "$GITHUB_EVENT_PATH")
 
@@ -86,7 +86,9 @@ main() {
         then
             sendReaction "$GITHUB_PULL_REQUEST_EVENT_NUMBER"
         else
-            sendComment "$GITHUB_PULL_REQUEST_EVENT_NUMBER" "$PULL_REQUEST_COMMENT"
+            if [[ "$GITHUB_EVENT_ACTION" == "opened" ]]; then
+                sendComment "$GITHUB_PULL_REQUEST_EVENT_NUMBER" "$PULL_REQUEST_COMMENT"
+            fi
             exit 1
         fi
     fi
