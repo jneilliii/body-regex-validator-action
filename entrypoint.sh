@@ -79,6 +79,7 @@ main() {
 
     # handle pull_request
     if [[ "$GITHUB_EVENT_NAME" == "pull_request" && "$GITHUB_EVENT_ACTION" =~ "^(opened|reopened|edited|synchronize)$" ]]; then
+        echo "Handling pull request event"
         GITHUB_PULL_REQUEST_EVENT_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
         GITHUB_PULL_REQUEST_EVENT_BODY=$(jq --raw-output .pull_request.body "$GITHUB_EVENT_PATH")
 
@@ -96,10 +97,12 @@ main() {
             fi
             exit 1
         fi
+        exit 0
     fi
 
     # handle issues
     if [[ "$GITHUB_EVENT_NAME" == "issues" && "$GITHUB_EVENT_ACTION" == "opened" ]]; then
+        echo "Handling issue event"
         GITHUB_ISSUE_EVENT_NUMBER=$(jq --raw-output .issue.number "$GITHUB_EVENT_PATH")
         GITHUB_ISSUE_EVENT_BODY=$(jq --raw-output .issue.body "$GITHUB_EVENT_PATH")
 
@@ -110,8 +113,9 @@ main() {
             sendComment "$GITHUB_ISSUE_EVENT_NUMBER" "$ISSUE_COMMENT"
             closeIssue "$GITHUB_ISSUE_EVENT_NUMBER"
         fi
+        exit 0
     fi
-    exit 0
+    echo "Unknown event, exiting."
 }
 
 main
