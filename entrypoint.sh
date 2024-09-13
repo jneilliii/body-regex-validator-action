@@ -70,7 +70,7 @@ closeIssue() {
          -H "Accept: application/vnd.github.v3+json" \
          -X POST \
          -H "Content-Type: application/json" \
-         -d "{\"state\":\"closed\"}" \
+         -d "{\"state\":\"closed\",\"state_reason \":\"not_planned\"}" \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_ISSUE_NUMBER}"
 }
 
