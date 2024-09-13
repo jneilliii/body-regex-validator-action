@@ -74,6 +74,18 @@ closeIssue() {
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_ISSUE_NUMBER}"
 }
 
+openIssue() {
+    local GITHUB_ISSUE_NUMBER="$1"
+
+    curl -sSL \
+         -H "Authorization: token ${GITHUB_TOKEN}" \
+         -H "Accept: application/vnd.github.v3+json" \
+         -X POST \
+         -H "Content-Type: application/json" \
+         -d "{\"state\":\"open\"}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${GITHUB_ISSUE_NUMBER}"
+}
+
 main() {
     GITHUB_EVENT_ACTION=$(jq --raw-output .action "$GITHUB_EVENT_PATH")
 
@@ -109,6 +121,11 @@ main() {
         if [[ "$GITHUB_ISSUE_EVENT_BODY" =~ $ISSUE_PATTERN ]]
         then
             sendReaction "$GITHUB_ISSUE_EVENT_NUMBER"
+            if [[ "$GITHUB_EVENT_ACTION" == "edited" ]]
+            then
+                echo "Reopening Issue."
+                openIssue "$GITHUB_ISSUE_EVENT_NUMBER"
+            fi
         else
             sendComment "$GITHUB_ISSUE_EVENT_NUMBER" "$ISSUE_COMMENT"
             closeIssue "$GITHUB_ISSUE_EVENT_NUMBER"
