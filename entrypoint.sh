@@ -117,11 +117,12 @@ main() {
         echo "Handling issue event"
         GITHUB_ISSUE_EVENT_NUMBER=$(jq --raw-output .issue.number "$GITHUB_EVENT_PATH")
         GITHUB_ISSUE_EVENT_BODY=$(jq --raw-output .issue.body "$GITHUB_EVENT_PATH")
+        GITHUB_ISSUE_EVENT_STATE=$(jq --raw-output .issue.state "$GITHUB_EVENT_PATH")
 
         if [[ "$GITHUB_ISSUE_EVENT_BODY" =~ $ISSUE_PATTERN ]]
         then
             sendReaction "$GITHUB_ISSUE_EVENT_NUMBER"
-            if [[ "$GITHUB_EVENT_ACTION" == "edited" ]]
+            if [[ "$GITHUB_EVENT_ACTION" == "edited" && $GITHUB_ISSUE_EVENT_STATE == "closed" ]]
             then
                 echo "Reopening Issue."
                 openIssue "$GITHUB_ISSUE_EVENT_NUMBER"
